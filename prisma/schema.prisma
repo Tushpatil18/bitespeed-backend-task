@@ -1,0 +1,25 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Contact {
+  id             Int      @id @default(autoincrement())
+  phoneNumber    String?  
+  email          String?  
+  linkedId       Int?     // ID of the primary contact, can be null for primary contact itself
+  linkPrecedence String   @default("primary") // Can be "primary" or "secondary"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+
+  // Relationship field
+  linkedContact  Contact? @relation("ContactLinks", fields: [linkedId], references: [id])
+
+  // This is the opposite relation for secondary contacts
+  secondaryContacts Contact[] @relation("ContactLinks")
+}
